@@ -15,3 +15,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/test','TestController@test');
+
+//微信
+Route::any('/test','TestController@test');
