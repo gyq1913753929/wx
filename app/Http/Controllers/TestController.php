@@ -11,7 +11,7 @@ class TestController extends Controller
     {
         $result = $this->CheckSignature();
         if($result){
-            echo $_GET["signature"];
+            echo $_GET["echostr"];
             exit;
         }
     }
