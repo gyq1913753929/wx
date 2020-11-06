@@ -17,5 +17,5 @@ Route::get('/', function () {
 
 
 //微信
-Route::any('/test','TestController@test');
+Route::post('/test','TestController@CheckSignature');      //接收事件推送
 Route::any('/token','TestController@getAccessToken');

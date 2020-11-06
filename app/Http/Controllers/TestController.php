@@ -30,10 +30,10 @@ class TestController extends Controller
         $tmpStr = implode( $tmpArr );
         $tmpStr = sha1( $tmpStr );
 
-        if( $tmpStr == $signature ){
-            return true;
+        if( $tmpStr == $signature ){        //验证通过
+            echo "";
         }else{
-            return false;
+           echo "";
         }
     }
 
@@ -60,9 +60,11 @@ class TestController extends Controller
             Redis::set($key,$token);
             Redis::expire($key,3600);       //过期时间自动删除
         }
-        
-        echo "access_token:".$token;
 
+        echo "access_token:".$token;
     }
+
+
+
 
 }
