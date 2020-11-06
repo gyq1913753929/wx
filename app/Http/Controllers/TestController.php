@@ -31,7 +31,25 @@ class TestController extends Controller
         $tmpStr = sha1( $tmpStr );
 
         if( $tmpStr == $signature ){        //验证通过
-            echo "";
+            // 1 接收数据
+            $xml_data = file_get_contents("php://input");
+            //记录日志
+            file_put_contents('wx_event.log',$xml_data);
+
+            //2 把xml文本转化为PHP的对象或数组
+            $data = simplexml_load_string($xml_data,'SimpleXMLElement',LIBXML_NOCDATA);
+           dd($data);
+            $xml = "<xml>
+                          <ToUserName><![CDATA[toUser]]></ToUserName>
+                          <FromUserName><![CDATA[fromUser]]></FromUserName>
+                          <CreateTime>1348831860</CreateTime>
+                          <MsgType><![CDATA[text]]></MsgType>
+                          <Content><![CDATA[this is a test]]></Content>
+
+                    </xml>";
+            echo $xml;
+
+
         }else{
            echo "";
         }
