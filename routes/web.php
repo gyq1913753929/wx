@@ -18,3 +18,4 @@ Route::get('/', function () {
 
 //微信
 Route::any('/test','TestController@test');
+Route::any('/token','TestController@getAccessToken');
