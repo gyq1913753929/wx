@@ -19,4 +19,7 @@ Route::get('/', function () {
 //微信
 Route::any('/test','TestController@test');          //接入
 Route::any('/token','TestController@getAccessToken');   //获取token
+
+
+
 Route::post('/wx','TestController@CheckSignature');         //推送事件
