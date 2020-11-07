@@ -31,10 +31,9 @@ class TestController extends Controller
         $tmpStr = sha1( $tmpStr );
 
         if( $tmpStr == $signature ){        //验证通过
-            // 1 接收数据
-            $xml_data = file_get_contents("php://input");
-            //记录日志
-            file_put_contents('2004.mayatong.error.log',$xml_data);
+            //1接收数据
+            $xml_str = file_get_contents("php://input");
+            file_put_contents('wx_event.log',$xml_str);
             echo "";
             die;
         }else{
