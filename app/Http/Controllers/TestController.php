@@ -11,9 +11,11 @@ class TestController extends Controller
     {
         //调用
         $result = $this->CheckSignature();
+        $echostr = request()->get("echostr","");
         if($result){
-            echo $_GET["echostr"];
-            exit;
+
+        }else{
+
         }
     }
 
@@ -33,12 +35,13 @@ class TestController extends Controller
         if( $tmpStr == $signature ){        //验证通过
             //1接收数据
             $xml_str = file_get_contents("php://input");
-            file_put_contents('wx_event.log',$xml_str);
+            $obj = file_put_contents('wx_event.log',$xml_str);
             echo "";
             die;
         }else{
            echo "";
         }
+
     }
 
     //获取accrss_token
@@ -68,6 +71,32 @@ class TestController extends Controller
         echo "access_token:".$token;
     }
 
+    //接收平台消息
+    public function receiveMsg()
+    {
+
+        $data = file_get_contents("php://input");
+        $xml_obj = simplexml_load_string($data);
+        //echo '<pre>';print_r($xml_obj);echo '</pre>';
+
+        echo $xml_obj;
+    }
+
+    //回复消息
+    private function responseText($xml_obj,$content){
+        $toUserName=$xml_obj->FromUserName;
+        $fromUserName=$xml_obj->ToUserName;
+        $time=time();
+        $msgType="text";
+        $xml="<xml>
+            <ToUserName><![CDATA[%s]]></ToUserName>
+            <FromUserName><![CDATA[%s]]></FromUserName>
+            <CreateTime>%s</CreateTime>
+            <MsgType><![CDATA[%s]]></MsgType>
+            <Content><![CDATA[%s]]></Content>
+            </xml>";
+        echo sprintf($xml,$toUserName,$fromUserName,$time,$msgType,$content);
+    }
 
 
 
