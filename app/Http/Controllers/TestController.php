@@ -40,7 +40,7 @@ class TestController extends Controller
             $obj = file_put_contents('wx_event.log',$xml_str);
             //回复
                     //关注事件
-                    if($obj->Event=="subscribe"){
+                   
                         $openid = $obj->FromUserName;
                         //获取token
                         $access_token=$this->getAccessToken();
@@ -62,7 +62,7 @@ class TestController extends Controller
                             }
                             $this->responseText($obj,$contentt);
                         }
-                    }
+
 
         }else{
            echo "";
