@@ -44,7 +44,7 @@ class TestController extends Controller
                             if ($user_id) {
                                 $user_id->status = 1;
                                 $user_id->save();
-                                $contentt = "感谢再次关注";
+                                $content = "感谢再次关注";
                             } else {
                                 $res = [
                                     'subscribe'=>$res['subscribe'],
@@ -63,14 +63,14 @@ class TestController extends Controller
 
 
                                 Fans::insert($res);
-                                $contentt = "欢迎老铁关注";
+                                $content = "欢迎老铁关注";
 
                             }
 
                         }
                     }
                 }
-                echo  $this->responseText($obj, $contentt);
+                echo  $this->responseText($obj, $content);
             }
     }
 
