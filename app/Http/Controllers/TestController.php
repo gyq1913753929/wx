@@ -49,7 +49,7 @@ class TestController extends Controller
                                 $contentt = "欢迎老铁关注";
 
                             }
-                            $this->responseText($obj, $contentt);
+                            echo  $this->responseText($obj, $contentt);
                         }
                     }
                 }
