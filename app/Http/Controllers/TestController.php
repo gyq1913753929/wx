@@ -24,9 +24,9 @@ class TestController extends Controller
     //处理推送事件
     public function CheckSignature()
     {
-        $signature = $_GET["signature"];
-        $timestamp = $_GET["timestamp"];
-        $nonce = $_GET["nonce"];
+        $signature = request()->get("signature");
+        $timestamp = request()->get("timestamp");
+        $nonce = request()->get("nonce");
 
         $token = config('weixin.Token');
         $tmpArr = array($token, $timestamp, $nonce);
@@ -39,7 +39,7 @@ class TestController extends Controller
             //记录日志
             $obj = file_put_contents('wx_event.log',$xml_str);
             //回复
-            switch($obj->MsgType){
+            switch($obj->MsgType=="event"){
                 case "even":
                     //关注事件
                     if($obj->Event=="subscribe"){
@@ -48,15 +48,23 @@ class TestController extends Controller
                         $access_token=$this->getAccessToken();
                         //获取用户信息
                         $url="https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN";
-                        echo $url;
-                        //转字符串
-                        $fans=json_decode($url,true);
-                        $fansModel = Fans::where('openid',$openid)->first();
+                        $res=json_decode($this->http_get($url),true);
+                        if(isset($res['errcode'])){
+                            file_put_contents('wx_event.log',$res['errcode']);
+                        }else{
+                            $user_id = Fans::where('openid',$openid)->first();
+                            if($user_id){
+                                $user_id->status=1;
+                                $user_id->save();
+                                $contentt = "感谢再次关注";
+                            }else{
+                                Fans::create($res);
+                                $contentt = "欢迎老铁关注";
 
-
-
+                            }
+                            $this->responseText($obj,$contentt);
+                        }
                     }
-
             }
         }else{
            echo "";
@@ -76,8 +84,7 @@ class TestController extends Controller
         {
             echo "有缓存";echo '<br>';
         }else{
-            echo "无缓存";echo '<br>';
-            $url="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".env('WX_APPID')."&secret=".env('WX_APPSEC')."";
+            $url="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".env('WX_APPID')."&secret=".env('WX_APPSEC');
 
             $client = new Client();         //实列化 客户端
             $response = $client->request('GET',$url,['verify'=>false]);   //发起请求并接收响应
@@ -93,7 +100,7 @@ class TestController extends Controller
             Redis::expire($key,3600);       //过期时间自动删除
         }
 
-        echo "access_token:".$token;
+        return $token;
 
     }
 
@@ -107,7 +114,7 @@ class TestController extends Controller
 
         echo $xml_obj->ToUserName;
     }
-
+    //
     public function guzzle1()
     {
         echo __METHOD__;
@@ -161,47 +168,88 @@ class TestController extends Controller
         echo sprintf($xml,$toUserName,$fromUserName,$time,$msgType,$content);
     }
 
-
+    //自定义菜单
     public function cd()
     {
         $access_token = $this->getAccessToken();
-        $url ='https://api.weixin.qq.com/cgi-bin/menu/create?access_token='.$access_token;
-        $menu = '{
-            "button":[
-            {
-                 "type":"click",
-                 "name":"今日歌曲",
-                 "key":"V1001_TODAY_MUSIC"
-             },
-             {
-                  "name":"菜单",
-                  "sub_button":[
-                  {
-                      "type":"view",
-                      "name":"搜索",
-                      "url":"http://www.baidu.com/"
-                   },
-                   {
-                      "type":"click",
-                      "name":"赞一下我们",
-                      "key":"V1001_GOOD"
-                   }]
-              }]
-        }';
+        $url ="https://api.weixin.qq.com/cgi-bin/menu/create?access_token=".$access_token;
+        $menu = [
+            "button"=>[
+              [
+                  "name"=>"游戏",
+                  "sub_button"=>[
+                [
+                    "type"=>"view",
+                    "name"=>"baidu",
+                    "url" =>"http://www.baidu.com",
+                ],
+                  [
+                      "type"=>"click",
+                      "name"=>"qqq",
+                      "key" =>"ffff",
+                  ]
+                      ]
+              ],
+
+                [
+                    "type"=>"click",
+                    "name"=>"天气预报",
+                    "key"=>"",
+                ],
+
+                [
+                    "name"=>"发图",
+                    "sub_button"=>[
+                        [
+                            "type"=>"pic_sysphoto",
+                            "name"=>"拍照图片",
+                            "key"=>"rselfmenu_1",
+                            "sub_button"=>[ ]
+                        ],
+
+                        [
+                            "type"=>"pic_photo_or_album",
+                            "name"=>"拍照或相册图片",
+                            "key"=>"rselfmenu_2",
+                            "sub_button"=>[ ]
+                        ],
+
+                        [
+                            "type"=>"pic_weixin",
+                            "name"=>"微信相册图片",
+                            "key"=>"rselfmenu_3",
+                            "sub_button"=>[ ]
+                        ],
+
+                    ]
+
+                ]
+
+
+
+
+            ]
+        ];
 
         $client = new Client();
 
         $response = $client->request('POST',$url,[
             'verify' =>false,
-            'body'=>json_encode($menu)
+            'body'=>json_encode($menu,JSON_UNESCAPED_UNICODE)
         ]);
-
+        $data = $response->getBody();
+        echo $data;
 
     }
 
 
 
-    public function curl($url,$menu){
+
+
+
+
+    //post类型
+    public function http_post($url,$menu){
         //1.初始化
         $ch = curl_init();
         //2.设置
@@ -216,6 +264,37 @@ class TestController extends Controller
         //关闭
         curl_close($ch);
         return $output;
+    }
+
+    //Get类型
+    public function http_get($url){
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);//向那个url地址上面发送
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);//设置发送http请求时需不需要证书
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//设置发送成功后要不要输出1 不输出，0输出
+        $output = curl_exec($ch);//执行
+        curl_close($ch);    //关闭
+        return $output;
+    }
+
+
+
+
+    public function cdtui($obj,$content)
+    {
+        $toUserName=$obj->FromUserName;
+        $fromUserName=$obj->ToUserName;
+        $time=time();
+        $msgType="text";
+        $xml = "<xml>
+                     <ToUserName><![CDATA[%s]]></ToUserName>
+                    <FromUserName><![CDATA[%s]]></FromUserName>
+                    <CreateTime></CreateTime>
+                    <MsgType><![CDATA[%s]]></MsgType>
+                    <Event><![CDATA[%s]]></Event>
+                    <EventKey><![CDATA[%s]]></EventKey>
+                    </xml>";
     }
 
 
