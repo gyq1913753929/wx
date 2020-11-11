@@ -62,7 +62,7 @@ class TestController extends Controller
                             $contentt = "欢迎老铁关注";
 
                         }
-                        $this->responseText($obj, $contentt);
+                    echo     $this->responseText($obj, $contentt);
                     }
                 }
             }
@@ -290,6 +290,7 @@ class TestController extends Controller
                     <Event><![CDATA[%s]]></Event>
                     <EventKey><![CDATA[%s]]></EventKey>
                     </xml>";
+        
     }
 
 
