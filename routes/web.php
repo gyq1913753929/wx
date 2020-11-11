@@ -22,7 +22,7 @@ Route::any('/token','TestController@getAccessToken');   //获取token
 
 
 
-Route::any('/test','TestController@CheckSignature');         //推送事件
+Route::any('/test','TestController@test');         //推送事件
 
 Route::post('/receiveMsg','TestController@receiveMsg');         //微信接收消息
 
