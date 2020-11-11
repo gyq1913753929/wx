@@ -12,70 +12,62 @@ class TestController extends Controller
     public function test()
     {
         //调用
+        //处理推送事件
         $result = $this->CheckSignature();
         $echostr = request()->get("echostr","");
         if($result){
 
         }else{
+            $signature = request()->get("signature");
+            $timestamp = request()->get("timestamp");
+            $nonce = request()->get("nonce");
 
-            $xml_str = file_get_contents("php://input");
-            //记录日志
-            $obj = simplexml_load_string($xml_str,"SimpleXMLElement",LIBXML_NOCDATA);
-            $contentt="+测试";
-            echo     $this->responseText($obj, $contentt);
-
-
-        }
-    }
-
-    //处理推送事件
-    public function CheckSignature()
-    {
-        $signature = request()->get("signature");
-        $timestamp = request()->get("timestamp");
-        $nonce = request()->get("nonce");
-
-        $token = config('weixin.Token');
-        $tmpArr = array($token, $timestamp, $nonce);
-        sort($tmpArr, SORT_STRING);
-        $tmpStr = implode($tmpArr);
-        $tmpStr = sha1($tmpStr);
-        if ($tmpStr == $signature) {        //验证通过
-            //1接收数据
-            $xml_str = file_get_contents("php://input");
-            //记录日志
-            $obj = simplexml_load_string($xml_str,"SimpleXMLElement",LIBXML_NOCDATA);
-            file_put_contents('wx_event.log', $xml_str);
-            //回复
-            //关注事件
-            if ($obj->MsgType == "event") {
-                if ($obj->Event == "subscribe") {
-                    $openid = $obj->FromUserName;
-                    //获取token
-                    $access_token = $this->getAccessToken();
-                    //获取用户信息
-                    $url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN";
-                    $res = json_decode($this->http_get($url), true);
-                    if (isset($res['errcode'])) {
-                        file_put_contents('wx_event.log', $res['errcode']);
-                    } else {
-                        $user_id = Fans::where('openid', $openid)->first();
-                        if ($user_id) {
-                            $user_id->status = 1;
-                            $user_id->save();
-                            $contentt = "感谢再次关注";
+            $token = config('weixin.Token');
+            $tmpArr = array($token, $timestamp, $nonce);
+            sort($tmpArr, SORT_STRING);
+            $tmpStr = implode($tmpArr);
+            $tmpStr = sha1($tmpStr);
+            if ($tmpStr == $signature) {        //验证通过
+                //1接收数据
+                $xml_str = file_get_contents("php://input");
+                //记录日志
+                $obj = simplexml_load_string($xml_str,"SimpleXMLElement",LIBXML_NOCDATA);
+                file_put_contents('wx_event.log', $xml_str);
+                //回复
+                //关注事件
+                if ($obj->MsgType == "event") {
+                    if ($obj->Event == "subscribe") {
+                        $openid = $obj->FromUserName;
+                        //获取token
+                        $access_token = $this->getAccessToken();
+                        //获取用户信息
+                        $url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN";
+                        $res = json_decode($this->http_get($url), true);
+                        if (isset($res['errcode'])) {
+                            file_put_contents('wx_event.log', $res['errcode']);
                         } else {
-                            Fans::insert($res);
-                            $contentt = "欢迎老铁关注";
+                            $user_id = Fans::where('openid', $openid)->first();
+                            if ($user_id) {
+                                $user_id->status = 1;
+                                $user_id->save();
+                                $contentt = "感谢再次关注";
+                            } else {
+                                Fans::insert($res);
+                                $contentt = "欢迎老铁关注";
 
+                            }
+                            $this->responseText($obj, $contentt);
                         }
-                        $contentt.="+测试";
-                    echo     $this->responseText($obj, $contentt);
                     }
                 }
             }
+
+
         }
     }
+
+    
+
 
     //获取accrss_token
     public function getAccessToken()

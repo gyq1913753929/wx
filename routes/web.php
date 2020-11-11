@@ -17,12 +17,12 @@ Route::get('/', function () {
 
 
 //微信
-Route::any('/test','TestController@test');          //接入
+          //接入
 Route::any('/token','TestController@getAccessToken');   //获取token
 
 
 
-Route::any('/wx','TestController@CheckSignature');         //推送事件
+Route::any('/test','TestController@CheckSignature');         //推送事件
 
 Route::post('/receiveMsg','TestController@receiveMsg');         //微信接收消息
 
