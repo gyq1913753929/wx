@@ -24,15 +24,16 @@ class TestController extends Controller
                 //1接收数据
                 $xml_str = file_get_contents("php://input");
                 //记录日志
-                $obj = simplexml_load_string($xml_str,"SimpleXMLElement",LIBXML_NOCDATA);
                 file_put_contents('wx_event.log', $xml_str);
+                $obj = simplexml_load_string($xml_str,"SimpleXMLElement",LIBXML_NOCDATA);
+
                 //回复
                 //关注事件
                 if ($obj->MsgType == "event") {
                     if ($obj->Event == "subscribe") {
-                        $openid = $obj->FromUserName;
                         //获取token
                         $access_token = $this->getAccessToken();
+                        $openid = $obj->FromUserName;
                         //获取用户信息
                         $url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN";
                         $user = file_get_contents($url);
@@ -42,7 +43,7 @@ class TestController extends Controller
                         } else {
                             $user_id = Fans::where('openid', $openid)->first();
                             if ($user_id) {
-                                $user_id->status = 1;
+                                $user_id->subscribe = 1;
                                 $user_id->save();
                                 $content = "感谢再次关注";
                             } else {
@@ -59,9 +60,6 @@ class TestController extends Controller
                                     'subscribe_time'=>$res['subscribe_time'],
                                     'subscribe_scene'=>$res['subscribe_scene']
                             ];
-
-
-
                                 Fans::insert($res);
                                 $content = "欢迎老铁关注";
 
@@ -70,9 +68,8 @@ class TestController extends Controller
                         }
 
                     }
-
+                    echo  $this->responseText($obj,$content);
                 }
-                echo  $this->responseText($obj,$content);
 
             }
     }

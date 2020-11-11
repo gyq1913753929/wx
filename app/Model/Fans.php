@@ -1,14 +1,16 @@
 <?php
-
-
 namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
 class Fans extends Model
 {
-    protected $table = 'fans';//表名
-    protected $primaryKey = "id";//主键
-    public $timestamps = false;//没有create_at 和update_at 这个字段
-    protected $fillable = ["nickname", "sex", "country", "province", "city", "headimgurl", "subscribe_time", "openid"];
+    //指定表名
+    protected $table = 'fans';
+    //指定主键
+    protected $primaryKey = 'id';
+    //不自动添加时间 create_at update_at
+    public $timestamps = false;
+    //黑名单
+    protected $guarded=[];
 }
