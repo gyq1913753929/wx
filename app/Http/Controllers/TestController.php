@@ -62,15 +62,12 @@ class TestController extends Controller
                             ];
                                 Fans::insert($res);
                                 $content = "欢迎老铁关注";
-
                             }
-
                         }
-
                     }
-                    echo  $this->responseText($obj,$content);
+                    
                 }
-
+                echo  $this->responseText($obj,$content);
             }
     }
 
