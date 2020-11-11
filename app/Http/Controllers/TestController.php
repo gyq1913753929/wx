@@ -41,27 +41,29 @@ class TestController extends Controller
             $obj = file_put_contents('wx_event.log', $xml_str);
             //回复
             //关注事件
-            if ($obj->Event == "subscribe") {
-                $openid = $obj->FromUserName;
-                //获取token
-                $access_token = $this->getAccessToken();
-                //获取用户信息
-                $url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN";
-                $res = json_decode($this->http_get($url), true);
-                if (isset($res['errcode'])) {
-                    file_put_contents('wx_event.log', $res['errcode']);
-                } else {
-                    $user_id = Fans::where('openid', $openid)->first();
-                    if ($user_id) {
-                        $user_id->status = 1;
-                        $user_id->save();
-                        $contentt = "感谢再次关注";
+            if ($obj->MsgType == "event") {
+                if ($obj->Event == "subscribe") {
+                    $openid = $obj->FromUserName;
+                    //获取token
+                    $access_token = $this->getAccessToken();
+                    //获取用户信息
+                    $url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN";
+                    $res = json_decode($this->http_get($url), true);
+                    if (isset($res['errcode'])) {
+                        file_put_contents('wx_event.log', $res['errcode']);
                     } else {
-                        Fans::insert($res);
-                        $contentt = "欢迎老铁关注";
+                        $user_id = Fans::where('openid', $openid)->first();
+                        if ($user_id) {
+                            $user_id->status = 1;
+                            $user_id->save();
+                            $contentt = "感谢再次关注";
+                        } else {
+                            Fans::insert($res);
+                            $contentt = "欢迎老铁关注";
 
+                        }
+                        $this->responseText($obj, $contentt);
                     }
-                    $this->responseText($obj, $contentt);
                 }
             }
         }
