@@ -46,32 +46,33 @@ class TestController extends Controller
                                 $user_id->save();
                                 $content = "感谢再次关注";
                             } else {
-//                                $res = [
-//                                    'subscribe'=>$res['subscribe'],
-//                                    'openid'=>$res['openid'],
-//                                    'nickname'=>$res['nickname'],
-//                                    'sex'=>$res['sex'],
-//                                    'city'=>$res['city'],
-//                                    'country'=>$res['country'],
-//                                    'province'=>$res['province'],
-//                                    'language'=>$res['language'],
-//                                    'headimgurl'=>$res['headimgurl'],
-//                                    'subscribe_time'=>$res['subscribe_time'],
-//                                    'subscribe_scene'=>$res['subscribe_scene']
-//                            ];
-//
-//
-//
-//                                Fans::insert($res);
+                                $res = [
+                                    'subscribe'=>$res['subscribe'],
+                                    'openid'=>$res['openid'],
+                                    'nickname'=>$res['nickname'],
+                                    'sex'=>$res['sex'],
+                                    'city'=>$res['city'],
+                                    'country'=>$res['country'],
+                                    'province'=>$res['province'],
+                                    'language'=>$res['language'],
+                                    'headimgurl'=>$res['headimgurl'],
+                                    'subscribe_time'=>$res['subscribe_time'],
+                                    'subscribe_scene'=>$res['subscribe_scene']
+                            ];
+
+
+
+                                Fans::insert($res);
                                 $content = "欢迎老铁关注";
 
                             }
 
                         }
+
                     }
-                    echo  $this->responseText($obj,$content);
 
                 }
+                echo  $this->responseText($obj,$content);
 
             }
     }
