@@ -58,7 +58,7 @@ class TestController extends Controller
                                 $user_id->save();
                                 $contentt = "感谢再次关注";
                             }else{
-                                Fans::create($res);
+                                Fans::insert($res);
                                 $contentt = "欢迎老铁关注";
 
                             }
