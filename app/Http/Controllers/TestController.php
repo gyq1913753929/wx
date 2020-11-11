@@ -39,8 +39,6 @@ class TestController extends Controller
             //记录日志
             $obj = file_put_contents('wx_event.log',$xml_str);
             //回复
-            switch($obj->MsgType=="event"){
-                case "even":
                     //关注事件
                     if($obj->Event=="subscribe"){
                         $openid = $obj->FromUserName;
@@ -65,7 +63,7 @@ class TestController extends Controller
                             $this->responseText($obj,$contentt);
                         }
                     }
-            }
+
         }else{
            echo "";
         }
@@ -75,7 +73,6 @@ class TestController extends Controller
     //获取accrss_token
     public function getAccessToken()
     {
-
         $key = 'wx:access_token';       //$key = 建
         //检查是否有token
         $token = Redis::get($key);
@@ -89,7 +86,6 @@ class TestController extends Controller
             $client = new Client();         //实列化 客户端
             $response = $client->request('GET',$url,['verify'=>false]);   //发起请求并接收响应
             $json_str = $response->getBody();       //服务器的响应数据
-
 
             $data = json_decode($json_str,true); //存到redis要转成字符串
             $token = $data['access_token'];
