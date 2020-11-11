@@ -11,13 +11,6 @@ class TestController extends Controller
 
     public function test()
     {
-        //调用
-        //处理推送事件
-        $result = $this->CheckSignature();
-        $echostr = request()->get("echostr","");
-        if($result){
-
-        }else{
             $signature = request()->get("signature");
             $timestamp = request()->get("timestamp");
             $nonce = request()->get("nonce");
@@ -63,7 +56,7 @@ class TestController extends Controller
             }
 
 
-        }
+
     }
 
 
