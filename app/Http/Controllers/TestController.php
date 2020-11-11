@@ -18,6 +18,13 @@ class TestController extends Controller
 
         }else{
 
+            $xml_str = file_get_contents("php://input");
+            //记录日志
+            $obj = simplexml_load_string($xml_str,"SimpleXMLElement",LIBXML_NOCDATA);
+            $contentt="+测试";
+            echo     $this->responseText($obj, $contentt);
+
+
         }
     }
 
