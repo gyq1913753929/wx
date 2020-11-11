@@ -37,8 +37,8 @@ class TestController extends Controller
             //1接收数据
             $xml_str = file_get_contents("php://input");
             //记录日志
-            $obj = simplexml_load_string($xml_str, "SimpleXMLElement", LIBXML_NOCDATA);
-            $obj = file_put_contents('wx_event.log', $xml_str);
+            $obj = simplexml_load_string($xml_str,"SimpleXMLElement",LIBXML_NOCDATA);
+            file_put_contents('wx_event.log', $xml_str);
             //回复
             //关注事件
             if ($obj->MsgType == "event") {
