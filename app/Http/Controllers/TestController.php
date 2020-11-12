@@ -11,9 +11,9 @@ class TestController extends Controller
 
     public function test()
     {
-            $signature = $_GET["signature"];
-            $timestamp = $_GET["timestamp"];
-            $nonce = $_GET["nonce"];
+            $signature = $_GET['signature'];
+            $timestamp = $_GET['timestamp'];
+            $nonce =$_GET['nonce'];
 
             $token = config('weixin.Token');
             $tmpArr = array($token, $timestamp, $nonce);
