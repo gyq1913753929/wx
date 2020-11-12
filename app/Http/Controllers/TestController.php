@@ -73,8 +73,9 @@ class TestController extends Controller
                         $user_id->save();
                         $content = "感谢再次关注";
                     }
+                    echo $this->responseText($obj, $content);
                 }
-                echo $this->responseText($obj, $content);
+
             }
 
         }
@@ -340,6 +341,8 @@ class TestController extends Controller
                     </xml>";
 
     }
+
+
 
 
 
