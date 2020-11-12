@@ -11,9 +11,9 @@ class TestController extends Controller
 
     public function test()
     {
-            $signature = request()->get("signature");
-            $timestamp = request()->get("timestamp");
-            $nonce = request()->get("nonce");
+            $signature = $_GET["signature"];
+            $timestamp = $_GET["timestamp"];
+            $nonce = $_GET["nonce"];
 
             $token = config('weixin.Token');
             $tmpArr = array($token, $timestamp, $nonce);
@@ -65,9 +65,9 @@ class TestController extends Controller
                             }
                         }
                     }
-
+                    echo  $this->responseText($obj,$content);
                 }
-                echo  $this->responseText($obj,$content);
+
             }
     }
 
