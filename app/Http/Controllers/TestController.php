@@ -35,7 +35,7 @@ class TestController extends Controller
                         $access_token = $this->getAccessToken();
                         $openid = $obj->FromUserName;
                         //获取用户信息
-                        $url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN";
+                        $url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=".$access_token."&openid=".$openid."&lang=zh_CN";
                         $user = file_get_contents($url);
                         $res = json_decode($user,true);
                         if (isset($res['errcode'])) {
@@ -46,8 +46,6 @@ class TestController extends Controller
                                 $user_id->subscribe = 1;
                                 $user_id->save();
                                 $content = "感谢再次关注";
-                                echo  $this->responseText($obj,$content);
-
                             } else {
                                 $res = [
                                     'subscribe'=>$res['subscribe'],
@@ -64,18 +62,12 @@ class TestController extends Controller
                             ];
                                 Fans::insert($res);
                                 $content = "欢迎老铁关注";
-                                echo  $this->responseText($obj,$content);
-
                             }
                         }
                     }
+                    echo  $this->responseText($obj,$content);
                 }
 
-
-
-
-            $content="ok";
-                echo  $this->responseText($obj,$content);
 
 
             }
