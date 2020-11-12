@@ -65,7 +65,19 @@ class TestController extends Controller
                             }
                         }
                     }
+
+                        if($obj->Event=="unsubscribe"){
+                            $openid=$obj->FromUserName;
+                            $user_id = Fans::where('openid', $openid)->first();
+                            $user_id->subscribe=0;
+                            $user->save();
+                            $content = "取消关注";
+                        }
                     echo  $this->responseText($obj,$content);
+                    }
+
+
+                    
                 }
 
 
