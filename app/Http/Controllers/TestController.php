@@ -109,7 +109,7 @@ class TestController extends Controller
         }
         //file_put_contents("tianqi.txt",$content);
 
-        echo $this->responseMsg($obj,$content);
+        echo $this->responseText($obj,$content);
 
     }
 
@@ -342,7 +342,15 @@ class TestController extends Controller
 
     }
 
+    //黑名单
+    public function hei()
+    {
+        $access_token = $this->getAccessToken();
+        $url="https://api.weixin.qq.com/cgi-bin/tags/members/getblacklist?access_token=".$access_token;
 
+
+
+    }
 
 
 
