@@ -11,78 +11,72 @@ class TestController extends Controller
 
     public function test()
     {
-            $signature = request()->get("signature");
-            $timestamp = request()->get("timestamp");
-            $nonce =request()->get("nonce");
+        $signature = request()->get("signature");
+        $timestamp = request()->get("timestamp");
+        $nonce = request()->get("nonce");
 
-            $token = env('WX_TOKEN');
-            $tmpArr = array($token, $timestamp, $nonce);
-            sort($tmpArr, SORT_STRING);
-            $tmpStr = implode($tmpArr);
-            $tmpStr = sha1($tmpStr);
-            if ($tmpStr == $signature) {        //验证通过
-                //1接收数据
-                $xml_str = file_get_contents("php://input");
-                //记录日志
-                file_put_contents('wx_event.log', $xml_str);
-                $obj = simplexml_load_string($xml_str,"SimpleXMLElement",LIBXML_NOCDATA);
+        $token = env('WX_TOKEN');
+        $tmpArr = array($token, $timestamp, $nonce);
+        sort($tmpArr, SORT_STRING);
+        $tmpStr = implode($tmpArr);
+        $tmpStr = sha1($tmpStr);
+        if ($tmpStr == $signature) {        //验证通过
+            //1接收数据
+            $xml_str = file_get_contents("php://input");
+            //记录日志
+            file_put_contents('wx_event.log', $xml_str);
+            $obj = simplexml_load_string($xml_str, "SimpleXMLElement", LIBXML_NOCDATA);
 
-                //回复
-                //关注事件
-                if ($obj->MsgType == "event") {
-                    if ($obj->Event == "subscribe") {
-                        //获取token
-                        $access_token = $this->getAccessToken();
-                        $openid = $obj->FromUserName;
-                        //获取用户信息
-                        $url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=".$access_token."&openid=".$openid."&lang=zh_CN";
-                        $user = file_get_contents($url);
-                        $res = json_decode($user,true);
-                        if (isset($res['errcode'])) {
-                            file_put_contents('wx_event.log', $res['errcode']);
+            //回复
+            //关注事件
+            if ($obj->MsgType == "event") {
+                if ($obj->Event == "subscribe") {
+                    //获取token
+                    $access_token = $this->getAccessToken();
+                    $openid = $obj->FromUserName;
+                    //获取用户信息
+                    $url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=" . $access_token . "&openid=" . $openid . "&lang=zh_CN";
+                    $user = file_get_contents($url);
+                    $res = json_decode($user, true);
+                    if (isset($res['errcode'])) {
+                        file_put_contents('wx_event.log', $res['errcode']);
+                    } else {
+                        $user_id = Fans::where('openid', $openid)->first();
+                        if ($user_id) {
+                            $user_id->subscribe = 1;
+                            $user_id->save();
+                            $content = "感谢再次关注";
                         } else {
-                            $user_id = Fans::where('openid', $openid)->first();
-                            if ($user_id) {
-                                $user_id->subscribe = 1;
-                                $user_id->save();
-                                $content = "感谢再次关注";
-                            } else {
-                                $res = [
-                                    'subscribe'=>$res['subscribe'],
-                                    'openid'=>$res['openid'],
-                                    'nickname'=>$res['nickname'],
-                                    'sex'=>$res['sex'],
-                                    'city'=>$res['city'],
-                                    'country'=>$res['country'],
-                                    'province'=>$res['province'],
-                                    'language'=>$res['language'],
-                                    'headimgurl'=>$res['headimgurl'],
-                                    'subscribe_time'=>$res['subscribe_time'],
-                                    'subscribe_scene'=>$res['subscribe_scene']
+                            $res = [
+                                'subscribe' => $res['subscribe'],
+                                'openid' => $res['openid'],
+                                'nickname' => $res['nickname'],
+                                'sex' => $res['sex'],
+                                'city' => $res['city'],
+                                'country' => $res['country'],
+                                'province' => $res['province'],
+                                'language' => $res['language'],
+                                'headimgurl' => $res['headimgurl'],
+                                'subscribe_time' => $res['subscribe_time'],
+                                'subscribe_scene' => $res['subscribe_scene']
                             ];
-                                Fans::insert($res);
-                                $content = "欢迎老铁关注";
-                            }
+                            Fans::insert($res);
+                            $content = "欢迎老铁关注";
                         }
                     }
-
-                        if($obj->Event=="unsubscribe"){
-                            $openid=$obj->FromUserName;
-                            $user_id = Fans::where('openid', $openid)->first();
-                            $user_id->subscribe=0;
-                            $user->save();
-                            $content = "取消关注";
-                        }
-                    echo  $this->responseText($obj,$content);
-                    }
-
-
-                    
                 }
 
-
-
+                if ($obj->Event == "unsubscribe") {
+                    $openid = $obj->FromUserName;
+                    $user_id = Fans::where('openid', $openid)->first();
+                    $user_id->subscribe = 0;
+                    $user->save();
+                    $content = "取消关注";
+                }
             }
+            echo $this->responseText($obj, $content);
+        }
+
     }
 
 
