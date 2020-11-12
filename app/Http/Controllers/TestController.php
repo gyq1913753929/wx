@@ -71,6 +71,13 @@ class TestController extends Controller
                     }
                 }
 
+
+
+
+            $content="ok";
+                echo  $this->responseText($obj,$content);
+
+
             }
     }
 
