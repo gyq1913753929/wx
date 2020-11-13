@@ -119,22 +119,22 @@ class TestController extends Controller
                         $file_type='.jpg';
                         $data["url"] = $obj->PicUrl;
                         $data["media_id"]=$obj->MediaId;
-                    }else
+                    }
                     //视频
                     if($obj->MsgType=="video"){
                         $file_type='.mp4';
                         $data["media_id"]=$obj->MediaId;
-                    }else
+                    }
                     //文本
                     if($obj->MsgType=="text"){
                         $file_type='.txt';
                         $data["content"]=$obj->Content;
-                    }else
+                    }
                     //音频
                     if($obj->MsgType=="voice"){
                         $file_type=".amr";
                         $data["media_id"]=$obj->MediaId;
-                    }else
+                    }
                     if(!empty($file_type)){
                         file_put_contents("dwaw".$file_type,$url);
                     }
@@ -144,9 +144,11 @@ class TestController extends Controller
                     return $res;
                 }
                 return true;
-            }
+            }elseif
             //签名
+            ($obj->MsgType=="even"){
 
+            }
 
 
         }
