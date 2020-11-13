@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use GuzzleHttp\Client;
 use App\Model\Fans;
+use App\Model\Messa;
 class TestController extends Controller
 {
 
@@ -65,10 +66,7 @@ class TestController extends Controller
                         }
                     }
                 }
-
                     echo $this->responseText($obj, $content);
-                
-
             }
 
         }
@@ -105,12 +103,8 @@ class TestController extends Controller
         echo $this->responseText($obj,$content);
 
     }
-
+        $this->typeContent($obj);
     }
-
-
-
-
     //获取accrss_token
     public function getAccessToken()
     {
@@ -205,6 +199,28 @@ class TestController extends Controller
         echo sprintf($xml,$toUserName,$fromUserName,$time,$msgType,$content);
     }
 
+
+    private function responseimg($obj,$media_id){
+        $toUserName=$obj->FromUserName;
+        $fromUserName=$obj->ToUserName;
+        $time=time();
+        $msgType="image";
+        $xml="<xml>
+                  <ToUserName><![CDATA[%s]]></ToUserName>
+                  <FromUserName><![CDATA[%s]]></FromUserName>
+                  <CreateTime>%s</CreateTime>
+                  <MsgType><![CDATA[%s]]></MsgType>
+                  <Image>
+                    <MediaId><![CDATA[%s]]></MediaId>
+                  </Image>
+               </xml>";
+        echo sprintf($xml,$toUserName,$fromUserName,$time,$msgType,$media_id);
+    }
+
+
+
+
+
     //自定义菜单
     public function cd()
     {
@@ -282,6 +298,65 @@ class TestController extends Controller
 
 
 
+    //素材
+    public function typeContent($obj)
+    {
+        $res = Messa::where("media_id",$obj->MediaId)->fitst();
+        $access_token = $this->getAccessToken();
+        if(empty($res)){
+            $url="https://api.weixin.qq.com/cgi-bin/media/get?access_token=".$access_token."&media_id=".$obj->MediaId;
+           $url=file_get_contents($url);
+            $data=[
+                "time"=>time(),
+                'msg_type'=>$obj->MsgType,
+                'openid'=>$obj->FromUserName,
+                "msg_id"=>$obj->MsgId
+            ];
+            //图片
+            if($obj->MsgType=="image"){
+                $file_type='.jpg';
+                $data["url"] = $obj->PicUrl;
+                $data["medis_id"]=$obj->MediaId;
+            }
+            //视频
+            if($obj->MsgType=="video"){
+                $file_type='.mp4';
+                $data["medis_id"]=$obj->MediaId;
+            }
+            //文本
+            if($obj->MsgType=="text"){
+                $file_type='.txt';
+                $data["content"]=$obj->Content;
+            }
+            //音频
+            if($obj->MsgType=="voice"){
+                $file_type=".amr";
+                $data["medis_id"]=$obj->MediaId;
+            }
+            if(!empty($file_type)){
+                file_put_contents("dwaw",$file_type,$url);
+            }
+            Media::create($data);
+
+        }else{
+            return $res;
+        }
+
+        return true;
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -335,15 +410,7 @@ class TestController extends Controller
 
     }
 
-    //黑名单
-    public function hei()
-    {
-        $access_token = $this->getAccessToken();
-        $url="https://api.weixin.qq.com/cgi-bin/tags/members/getblacklist?access_token=".$access_token;
 
-
-
-    }
 
 
 
