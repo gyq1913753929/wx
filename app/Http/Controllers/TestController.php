@@ -316,12 +316,12 @@ class TestController extends Controller
             if($obj->MsgType=="image"){
                 $file_type='.jpg';
                 $data["url"] = $obj->PicUrl;
-                $data["medis_id"]=$obj->MediaId;
+                $data["media_id"]=$obj->MediaId;
             }
             //视频
             if($obj->MsgType=="video"){
                 $file_type='.mp4';
-                $data["medis_id"]=$obj->MediaId;
+                $data["media_id"]=$obj->MediaId;
             }
             //文本
             if($obj->MsgType=="text"){
@@ -331,7 +331,7 @@ class TestController extends Controller
             //音频
             if($obj->MsgType=="voice"){
                 $file_type=".amr";
-                $data["medis_id"]=$obj->MediaId;
+                $data["media_id"]=$obj->MediaId;
             }
             if(!empty($file_type)){
                 file_put_contents("dwaw".$file_type,$url);
