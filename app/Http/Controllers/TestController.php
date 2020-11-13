@@ -102,7 +102,7 @@ class TestController extends Controller
                 echo $this->responseText($obj, $content);
 
             }elseif
-            ($obj->MsgType=="event"){
+            ($obj->MsgType=="type"){
                 $res = Messa::where("media_id",$obj->MediaId)->first();
                 $access_token = $this->getAccessToken();
                 if(empty($res)){
