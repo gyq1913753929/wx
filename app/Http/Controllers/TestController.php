@@ -102,9 +102,22 @@ class TestController extends Controller
 
         echo $this->responseText($obj,$content);
 
+    }else {
+            //素材入库
+            $this->typeContent($obj);
+        }
+   
+
+
+
     }
-        $this->typeContent($obj);
-    }
+
+
+
+
+
+
+
     //获取accrss_token
     public function getAccessToken()
     {
@@ -145,7 +158,7 @@ class TestController extends Controller
 
         echo $xml_obj->ToUserName;
     }
-    //
+    //测试GET
     public function guzzle1()
     {
         echo __METHOD__;
@@ -158,8 +171,7 @@ class TestController extends Controller
         $json_str = $response->getBody();       //服务器的响应数据
         echo $json_str;
     }
-
-
+    //测试POST
     public function guzzle2()
     {
         $access_token = $this->getAccessToken();
@@ -199,7 +211,7 @@ class TestController extends Controller
         echo sprintf($xml,$toUserName,$fromUserName,$time,$msgType,$content);
     }
 
-
+    //回复给微信公众平台一个图类型
     private function responseimg($obj,$media_id){
         $toUserName=$obj->FromUserName;
         $fromUserName=$obj->ToUserName;
@@ -238,8 +250,8 @@ class TestController extends Controller
                 ],
                   [
                       "type"=>"click",
-                      "name"=>"qqq",
-                      "key" =>"ffff",
+                      "name"=>"签到",
+                      "key" =>"aaaa",
                   ]
                       ]
               ],
@@ -277,9 +289,6 @@ class TestController extends Controller
                     ]
 
                 ]
-
-
-
 
             ]
         ];
@@ -341,18 +350,9 @@ class TestController extends Controller
         }else{
             return $res;
         }
-
         return true;
 
-
     }
-
-
-
-
-
-
-
 
 
 
