@@ -119,16 +119,23 @@ class TestController extends Controller
                         $file_type='.jpg';
                         $data["url"] = $obj->PicUrl;
                         $data["media_id"]=$obj->MediaId;
-                    }elseif($obj->MsgType=="video"){
+                    }else
+                    //视频
+                    if($obj->MsgType=="video"){
                         $file_type='.mp4';
                         $data["media_id"]=$obj->MediaId;
-                    }elseif($obj->MsgType=="text"){
+                    }else
+                    //文本
+                    if($obj->MsgType=="text"){
                         $file_type='.txt';
                         $data["content"]=$obj->Content;
-                    }elseif($obj->MsgType=="voice"){
+                    }else
+                    //音频
+                    if($obj->MsgType=="voice"){
                         $file_type=".amr";
                         $data["media_id"]=$obj->MediaId;
-                    }elseif(!empty($file_type)){
+                    }else
+                    if(!empty($file_type)){
                         file_put_contents("dwaw".$file_type,$url);
                     }
                     Messa::insert($data);
