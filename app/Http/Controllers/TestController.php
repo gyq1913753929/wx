@@ -334,9 +334,9 @@ class TestController extends Controller
                 $data["medis_id"]=$obj->MediaId;
             }
             if(!empty($file_type)){
-                file_put_contents("dwaw",$file_type,$url);
+                file_put_contents("dwaw".$file_type,$url);
             }
-            Media::create($data);
+            Media::insert($data);
 
         }else{
             return $res;
