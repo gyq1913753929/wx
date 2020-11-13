@@ -69,7 +69,7 @@ class TestController extends Controller
                 echo $this->responseText($obj, $content);
             }elseif
 
-
+            //天气
             ($obj->MsgType == "text") {
                 $city = urlencode(str_replace("天气:", "", $obj->Content));
                 $key = "e2ca2bb61958e6478028e72b8a7a8b60";
@@ -102,7 +102,8 @@ class TestController extends Controller
                 echo $this->responseText($obj, $content);
 
             }elseif
-            ($obj->MsgType=="type"){
+            //素材
+            ($obj->MsgType=="file_type"){
                 $res = Messa::where("media_id",$obj->MediaId)->first();
                 $access_token = $this->getAccessToken();
                 if(empty($res)){
@@ -144,11 +145,11 @@ class TestController extends Controller
                     return $res;
                 }
                 return true;
+            }elseif
+            //签名
+            ($obj->MsgType=="click"){
+                
             }
-
-
-
-
 
 
         }
