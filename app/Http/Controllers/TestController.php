@@ -100,8 +100,7 @@ class TestController extends Controller
 
                 echo $this->responseText($obj, $content);
 
-            }else
-            if($obj->MsgType=="image"){
+            }else if($obj->MsgType=="image"){
                 $res = Messa::where("media_id",$obj->MediaId)->first();
                 $access_token = $this->getAccessToken();
                 if(empty($res)){
@@ -143,10 +142,20 @@ class TestController extends Controller
                     return $res;
                 }
                 return true;
-            }
-            //签名
-            if($obj->MsgType=="click"){
-
+            }else if($obj->Event=="click") {
+                if ($obj->EventKey == "V1001_TODAY_QQ") {
+                    $key = '1233455';
+                    $openid = $obj->ToUserName;
+                    $slsmember = Redis::sismember($key, $openid);
+                    if ($slsmember == '1') {
+                        $content = "已签到";
+                        $this->checkText($obj, $content);
+                    } else {
+                        $content = "签到成功";
+                        Redis::sAdd($key, $openid);
+                        $this->checkText($obj, $content);
+                    }
+                }
             }
 
 
@@ -296,7 +305,7 @@ class TestController extends Controller
                   [
                       "type"=>"click",
                       "name"=>"签到",
-                      "key" =>"aaaa",
+                      "key" =>"V1001_TODAY_QQ",
                   ]
                       ]
               ],
