@@ -301,7 +301,7 @@ class TestController extends Controller
     //素材
     public function typeContent($obj)
     {
-        $res = Messa::where("media_id",$obj->MediaId)->fitst();
+        $res = Messa::where("media_id",$obj->MediaId)->first();
         $access_token = $this->getAccessToken();
         if(empty($res)){
             $url="https://api.weixin.qq.com/cgi-bin/media/get?access_token=".$access_token."&media_id=".$obj->MediaId;
