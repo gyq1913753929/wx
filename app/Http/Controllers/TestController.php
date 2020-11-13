@@ -100,8 +100,7 @@ class TestController extends Controller
 
                 echo $this->responseText($obj, $content);
 
-            }
-
+            }else
             if($obj->MsgType=="image"){
                 $res = Messa::where("media_id",$obj->MediaId)->first();
                 $access_token = $this->getAccessToken();
@@ -144,9 +143,9 @@ class TestController extends Controller
                     return $res;
                 }
                 return true;
-            }elseif
+            }
             //签名
-            ($obj->MsgType=="even"){
+            if($obj->MsgType=="click"){
 
             }
 
