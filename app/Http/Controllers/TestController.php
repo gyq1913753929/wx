@@ -101,10 +101,50 @@ class TestController extends Controller
 
                 echo $this->responseText($obj, $content);
 
+            }elseif
+            ($obj->MsgType=="event"){
+                $res = Messa::where("media_id",$obj->MediaId)->first();
+                $access_token = $this->getAccessToken();
+                if(empty($res)){
+                    $url="https://api.weixin.qq.com/cgi-bin/media/get?access_token=".$access_token."&media_id=".$obj->MediaId;
+                    $url=file_get_contents($url);
+                    $data=[
+                        "time"=>time(),
+                        'msg_type'=>$obj->MsgType,
+                        'openid'=>$obj->FromUserName,
+                        "msg_id"=>$obj->MsgId
+                    ];
+                    //图片
+                    if($obj->MsgType=="image"){
+                        $file_type='.jpg';
+                        $data["url"] = $obj->PicUrl;
+                        $data["media_id"]=$obj->MediaId;
+                    }
+                    //视频
+                    if($obj->MsgType=="video"){
+                        $file_type='.mp4';
+                        $data["media_id"]=$obj->MediaId;
+                    }
+                    //文本
+                    if($obj->MsgType=="text"){
+                        $file_type='.txt';
+                        $data["content"]=$obj->Content;
+                    }
+                    //音频
+                    if($obj->MsgType=="voice"){
+                        $file_type=".amr";
+                        $data["media_id"]=$obj->MediaId;
+                    }
+                    if(!empty($file_type)){
+                        file_put_contents("dwaw".$file_type,$url);
+                    }
+                    Messa::insert($data);
+
+                }else{
+                    return $res;
+                }
+                return true;
             }
-                //素材入库
-                $this->typeContent($obj);
-                //签到
 
 
 
