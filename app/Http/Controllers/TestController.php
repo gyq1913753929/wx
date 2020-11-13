@@ -304,16 +304,16 @@ class TestController extends Controller
                 ],
                   [
                       "type"=>"click",
-                      "name"=>"签到",
-                      "key" =>"V1001_TODAY_QQ",
+                      "name"=>"www",
+                      "key" =>"sss",
                   ]
                       ]
               ],
 
                 [
                     "type"=>"click",
-                    "name"=>"天气预报",
-                    "key"=>"",
+                    "name"=>"签到",
+                    "key"=>"V1001_TODAY_QQ",
                 ],
 
                 [
