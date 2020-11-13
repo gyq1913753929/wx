@@ -336,7 +336,7 @@ class TestController extends Controller
             if(!empty($file_type)){
                 file_put_contents("dwaw".$file_type,$url);
             }
-            Media::insert($data);
+            Messa::insert($data);
 
         }else{
             return $res;
