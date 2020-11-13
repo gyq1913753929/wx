@@ -67,10 +67,9 @@ class TestController extends Controller
                     }
                 }
                 echo $this->responseText($obj, $content);
-            }elseif
+            }
 
-            //天气
-            ($obj->MsgType == "text") {
+            if($obj->MsgType == "text") {
                 $city = urlencode(str_replace("天气:", "", $obj->Content));
                 $key = "e2ca2bb61958e6478028e72b8a7a8b60";
                 $url = "http://apis.juhe.cn/simpleWeather/query?city=" . $city . "&key=" . $key;
@@ -101,9 +100,9 @@ class TestController extends Controller
 
                 echo $this->responseText($obj, $content);
 
-            }elseif
-            //素材
-            ($obj->MsgType=="file_type"){
+            }
+
+            if($obj->MsgType=="image"){
                 $res = Messa::where("media_id",$obj->MediaId)->first();
                 $access_token = $this->getAccessToken();
                 if(empty($res)){
@@ -120,22 +119,22 @@ class TestController extends Controller
                         $file_type='.jpg';
                         $data["url"] = $obj->PicUrl;
                         $data["media_id"]=$obj->MediaId;
-                    }
+                    }else
                     //视频
                     if($obj->MsgType=="video"){
                         $file_type='.mp4';
                         $data["media_id"]=$obj->MediaId;
-                    }
+                    }else
                     //文本
                     if($obj->MsgType=="text"){
                         $file_type='.txt';
                         $data["content"]=$obj->Content;
-                    }
+                    }else
                     //音频
                     if($obj->MsgType=="voice"){
                         $file_type=".amr";
                         $data["media_id"]=$obj->MediaId;
-                    }
+                    }else
                     if(!empty($file_type)){
                         file_put_contents("dwaw".$file_type,$url);
                     }
@@ -145,11 +144,9 @@ class TestController extends Controller
                     return $res;
                 }
                 return true;
-            }elseif
-            //签名
-            ($obj->MsgType=="click"){
-                
             }
+            //签名
+
 
 
         }
