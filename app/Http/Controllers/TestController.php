@@ -102,11 +102,11 @@ class TestController extends Controller
 
         echo $this->responseText($obj,$content);
 
-    }else {
+    }
             //素材入库
             $this->typeContent($obj);
-        }
-   
+        
+
 
 
 
