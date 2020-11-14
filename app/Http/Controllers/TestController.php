@@ -36,7 +36,7 @@ class TestController extends Controller
                     $access_token = $this->getAccessToken();
                     $openid = $obj->FromUserName;
                     //获取用户信息
-                    $url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=" . $access_token . "&openid=" . $openid . "&lang=zh_CN";
+                    $url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=".$access_token."&openid=".$openid ."&lang=zh_CN";
                     $user = file_get_contents($url);
                     $res = json_decode($user, true);
                     if (isset($res['errcode'])) {
@@ -100,7 +100,9 @@ class TestController extends Controller
 
                 echo $this->responseText($obj, $content);
 
-            }else if($obj->MsgType=="image"){
+            }
+
+            if($obj->MsgType=="image"){
                 $res = Messa::where("media_id",$obj->MediaId)->first();
                 $access_token = $this->getAccessToken();
                 if(empty($res)){
@@ -142,20 +144,23 @@ class TestController extends Controller
                     return $res;
                 }
                 return true;
-            }else if($obj->Event=="click") {
+            }
+
+            if($obj->Event=="CLICK") {
                 if ($obj->EventKey == "V1001_TODAY_QQ") {
                     $key = '1233455';
                     $openid = $obj->ToUserName;
                     $slsmember = Redis::sismember($key, $openid);
                     if ($slsmember == '1') {
                         $content = "已签到";
-                        $this->checkText($obj, $content);
+                       echo $this->responseText($obj, $content);
                     } else {
                         $content = "签到成功";
                         Redis::sAdd($key, $openid);
-                        $this->checkText($obj, $content);
+                       echo $this->responseText($obj, $content);
                     }
                 }
+
             }
 
 
@@ -303,7 +308,7 @@ class TestController extends Controller
                     "url" =>"http://www.baidu.com",
                 ],
                   [
-                      "type"=>"click",
+                      "type"=>"CLICK",
                       "name"=>"www",
                       "key" =>"sss",
                   ]
@@ -311,7 +316,7 @@ class TestController extends Controller
               ],
 
                 [
-                    "type"=>"click",
+                    "type"=>"CLICK",
                     "name"=>"签到",
                     "key"=>"V1001_TODAY_QQ",
                 ],
