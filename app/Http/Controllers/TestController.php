@@ -68,7 +68,7 @@ class TestController extends Controller
                 }
                 echo $this->responseText($obj, $content);
             }
-
+            //天气
             if($obj->MsgType == "text") {
                 $city = urlencode(str_replace("天气:", "", $obj->Content));
                 $key = "e2ca2bb61958e6478028e72b8a7a8b60";
@@ -100,8 +100,8 @@ class TestController extends Controller
 
                 echo $this->responseText($obj, $content);
 
-            }else
-
+            }
+            //素材
             if($obj->MsgType=="image"){
                 $res = Messa::where("media_id",$obj->MediaId)->first();
                 $access_token = $this->getAccessToken();
@@ -144,8 +144,8 @@ class TestController extends Controller
                     return $res;
                 }
                 return true;
-            }else
-
+            }
+            //签到
             if($obj->EventKey == "LI"){
                $key = $obj->FromUsername;
                $times = data("Y-m-d",time());
