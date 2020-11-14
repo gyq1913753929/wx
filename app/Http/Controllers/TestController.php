@@ -146,22 +146,29 @@ class TestController extends Controller
                 return true;
             }else
 
-            if($obj->Event=="CLICK") {
-                if ($obj->EventKey == "V1001_TODAY_QQ") {
-                    $key = '1233455';
-                    $openid = $obj->ToUserName;
-                    $slsmember = Redis::sismember($key, $openid);
-                    if ($slsmember == '1') {
-                        $content = "已签到";
-                       echo $this->responseText($obj, $content);
-                    } else {
-                        $content = "签到成功";
-                        Redis::sAdd($key, $openid);
-                       echo $this->responseText($obj, $content);
-                    }
-                }
+            if($obj->EventKey == "LI"){
+               $key = $obj->FromUsername;
+               $times = data("Y-m-d",time());
+               $date = Redis::zrange($key,0,-1);
+               if($date){
+                   $date = $date[0];
+               }
 
-            }
+               if($date == $times){
+                   $content="今日已经签到了";
+               }else{
+                   $zcard = Redis::zcard($key);
+                   if($zcard>=1){
+                       Redis::zremrangebyrank($key,0,0);
+                   }
+                   $keys = $this->responseText($obj);
+                   $keys = $keys['FromUserName'];
+                   $zincrby = Redis::zincrby($key,1,$keys);
+                   $zdd  =Redis::zadd($key,$zincrby,$times);
+
+               }
+
+           }
 
 
         }
@@ -299,21 +306,7 @@ class TestController extends Controller
         $url ="https://api.weixin.qq.com/cgi-bin/menu/create?access_token=".$access_token;
         $menu = [
             "button"=>[
-              [
-                  "name"=>"游戏",
-                  "sub_button"=>[
-                [
-                    "type"=>"view",
-                    "name"=>"baidu",
-                    "url" =>"http://www.baidu.com",
-                ],
-                  [
-                      "type"=>"CLICK",
-                      "name"=>"www",
-                      "key" =>"sss",
-                  ]
-                      ]
-              ],
+
 
                 [
                     "type"=>"click",
