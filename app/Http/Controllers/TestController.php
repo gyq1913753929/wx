@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Redis;
 use GuzzleHttp\Client;
 use App\Model\Fans;
 use App\Model\Messa;
+use App\Model\XcxLogin;
+use DB;
 class TestController extends Controller
 {
 
@@ -161,11 +163,13 @@ class TestController extends Controller
                    if($zcard>=1){
                        Redis::zremrangebyrank($key,0,0);
                    }
-                   $keys = $this->responseText($obj);
+                   $keys = $this->receiveMsg($obj);
                    $keys = $keys['FromUserName'];
                    $zincrby = Redis::zincrby($key,1,$keys);
                    $zdd  =Redis::zadd($key,$zincrby,$times);
 
+                   $score = Redis::incrby($keys . "_score",100);
+                   $content = "签到成功";
                }
 
            }
@@ -461,6 +465,102 @@ class TestController extends Controller
                     </xml>";
 
     }
+
+
+    //测试
+    public function  eee()
+    {
+            $goods_info=[
+                'goods_id' =>123123,
+                'goods_name' => "IPJONE",
+                'orice' => 12.34
+            ];
+
+            return $goods_info;
+    }
+
+
+    //xcx
+    public function login(Request $request)
+    {
+        //接收code
+        $code = request()->get('code');
+        //使用code
+        $url='https://api.weixin.qq.com/sns/jscode2session?appid='.env('WX_XCX_APPID').'&secret='.env('WX_XCX_APPSEC').'&js_code='.$code.'&grant_type=authorization_code';
+        //转json
+        $data = json_decode(file_get_contents($url),true);
+        //自定议状态
+        if(isset($data['errcode'])){
+            $response=[
+                'errno'=> 50001,
+                'msg' => '登陆成功',
+        ];
+        }else{
+            //openid入库
+            if(empty(XcxLogin::where('openid',$data['openid'])->first())){
+                $openid=["openid"=>$data["openid"]];
+                XcxLogin::insert($openid);
+            }
+            $token=sha1($data['openid'].$data['session_key'].mt_rand(0,99999));
+            //保存token
+            $redis_key = 'xcx_token:'.$token;
+            Redis::set($redis_key,time());
+            //过期时间
+            Redis::expire($redis_key,7200);
+
+            $response = [
+                'errno' =>0,
+                'msg' =>'ok',
+                'data'=>[
+                    'token'=>$token
+                ]
+            ];
+        }
+        return $response;
+    }
+
+    public function detail()
+    {
+
+        $res = DB::table('ecs_goods')->select('goods_id','shop_price','goods_name','goods_img','goods_number')->get()->toArray();
+
+        $response=[
+            'errno'=>0,
+            'msg'=>'ok',
+            'data'=>[
+                'list'=>$res
+            ]
+        ];
+
+        return $response;
+    }
+
+    public function detailww(Request $request)
+    {
+        $goods_id=request()->get('goods_id');
+
+        $res = DB::table('ecs_goods')->select('goods_id','shop_price','goods_name','goods_img','goods_number','goods_thumb')->where('goods_id',$goods_id)->first();
+
+        $response=[
+            'errno'=>0,
+            'msg'=>'ok',
+            'data'=>[
+                'list'=>$res
+            ]
+        ];
+
+
+//        $array=[
+//          'goods_thumb'=>explode(",",$res['goods_thumb']),
+//            'goods_name'=>$res['goods_name'],
+//            'goods_img'=>$res['goods_img'],
+//            'goods_number'=>$res['goods_number'],
+//        ];
+
+
+        return $response;
+    }
+
 
 
 

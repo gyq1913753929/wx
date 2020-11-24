@@ -32,3 +32,14 @@ Route::get('/guzzle1',"TestController@guzzle1");
 Route::get('/guzzle2',"TestController@guzzle2");
 Route::any('/cd',"TestController@cd");                  //菜单
 Route::any('/typeContent',"TestController@typeContent");
+
+
+Route::any('/eee',"TestController@eee");
+
+Route::any('/login',"TestController@login");
+
+
+Route::any('/detail',"TestController@detail");
+
+
+Route::any('/detailww',"TestController@detailww");

@@ -1,0 +1,19 @@
+
+.swiper{
+    border: 1px solid red;
+    background-color: #8be9fd;
+    height: 200px;
+}
+
+.nav{
+    border:1px solid grey;
+}
+
+.list{
+    margin-top:20px;
+    border:1px solid blue;
+}
+
+.list ul li {
+    list-style: none;
+}
