@@ -10,6 +10,7 @@ use App\Model\Messa;
 use App\Model\XcxLogin;
 use App\Model\GoodsModel;
 use App\Model\Cart;
+use App\Model\Wwww;
 use DB;
 class TestController extends Controller
 {
@@ -83,19 +84,18 @@ class TestController extends Controller
                 $content="";
                 if($res['code'] ==200){
                    $content = $res['newslist'][0]['pinyin'];
+                   $data=[
+                       "time"=>time(),
+                       "content"=>$obj->Content,
+                       "msgid"=>$obj->MsgId,
+                   ];
+                    Wwww::insert($data);
+
+
                 }else{
                     echo "错误".$res['msg'];
                 }
                 echo $this->responseText($obj, $content);
-
-
-
-
-
-
-
-
-
 
 
 
