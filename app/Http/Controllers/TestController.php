@@ -83,7 +83,7 @@ class TestController extends Controller
 
                 $content="";
                 if($res['code'] ==200){
-                   $content = $res['newslist'][0]['pinyin'];
+                   $content = "首次查询:".$res['newslist'][0]['pinyin'];
                    $data=[
                        "time"=>time(),
                        "content"=>$obj->Content,
