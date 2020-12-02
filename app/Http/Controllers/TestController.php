@@ -34,44 +34,44 @@ class TestController extends Controller
 
             //回复
             //关注事件
-//            if ($obj->MsgType == "event") {
-//                if ($obj->Event == "subscribe") {
-//                    //获取token
-//                    $access_token = $this->getAccessToken();
-//                    $openid = $obj->FromUserName;
-//                    //获取用户信息
-//                    $url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=".$access_token."&openid=".$openid ."&lang=zh_CN";
-//                    $user = file_get_contents($url);
-//                    $res = json_decode($user, true);
-//                    if (isset($res['errcode'])) {
-//                        file_put_contents('wx_event.log', $res['errcode']);
-//                    } else {
-//                        $user_id = Fans::where('openid', $openid)->first();
-//                        if ($user_id) {
-//                            $user_id->subscribe = 1;
-//                            $user_id->save();
-//                            $content = "感谢再次关注";
-//                        } else {
-//                            $res = [
-//                                'subscribe' => $res['subscribe'],
-//                                'openid' => $res['openid'],
-//                                'nickname' => $res['nickname'],
-//                                'sex' => $res['sex'],
-//                                'city' => $res['city'],
-//                                'country' => $res['country'],
-//                                'province' => $res['province'],
-//                                'language' => $res['language'],
-//                                'headimgurl' => $res['headimgurl'],
-//                                'subscribe_time' => $res['subscribe_time'],
-//                                'subscribe_scene' => $res['subscribe_scene']
-//                            ];
-//                            Fans::insert($res);
-//                            $content = "欢迎老铁关注";
-//                        }
-//                    }
-//                }
-//                echo $this->responseText($obj, $content);
-//            }
+            if ($obj->MsgType == "event") {
+                if ($obj->Event == "subscribe") {
+                    //获取token
+                    $access_token = $this->getAccessToken();
+                    $openid = $obj->FromUserName;
+                    //获取用户信息
+                    $url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=".$access_token."&openid=".$openid ."&lang=zh_CN";
+                    $user = file_get_contents($url);
+                    $res = json_decode($user, true);
+                    if (isset($res['errcode'])) {
+                        file_put_contents('wx_event.log', $res['errcode']);
+                    } else {
+                        $user_id = Fans::where('openid', $openid)->first();
+                        if ($user_id) {
+                            $user_id->subscribe = 1;
+                            $user_id->save();
+                            $content = "感谢再次关注";
+                        } else {
+                            $res = [
+                                'subscribe' => $res['subscribe'],
+                                'openid' => $res['openid'],
+                                'nickname' => $res['nickname'],
+                                'sex' => $res['sex'],
+                                'city' => $res['city'],
+                                'country' => $res['country'],
+                                'province' => $res['province'],
+                                'language' => $res['language'],
+                                'headimgurl' => $res['headimgurl'],
+                                'subscribe_time' => $res['subscribe_time'],
+                                'subscribe_scene' => $res['subscribe_scene']
+                            ];
+                            Fans::insert($res);
+                            $content = "欢迎老铁关注";
+                        }
+                    }
+                }
+                echo $this->responseText($obj, $content);
+            }
             //翻议
             if($obj->MsgType == "text") {
                 $key="c1b7e5773085e1ebd6e35708896d4e01";
@@ -89,7 +89,7 @@ class TestController extends Controller
                 }else{
                     echo "错误".$res['msg'];
                 }
-                echo $this->responseText(1);
+                echo $this->responseText($obj, $content);
 
 
 
