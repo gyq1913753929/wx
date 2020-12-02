@@ -83,9 +83,7 @@ class TestController extends Controller
 
                 $content="";
                 if($res['code'] ==200){
-
-
-
+                   $content = res['newslist'][0]['pinyin'];
                 }else{
                     echo "错误".$res['msg'];
                 }
