@@ -78,13 +78,13 @@ class TestController extends Controller
                 $text = $obj->Content;
                 $url = "http://api.tianapi.com/txapi/pinyin/index?key=".$key."&text=".$text;
                 $json = file_get_contents($url);
-                file_put_contents('json.txt',$json);
+
                 $res = json_decode($json,true);
                 $content="";
                 if($res['code'] ==200){
                     print_r($json);
                 }else{
-                    echo $json['msg'];
+                    echo $res['msg'];
                 }
 
 
