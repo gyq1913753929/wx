@@ -77,16 +77,18 @@ class TestController extends Controller
                 $key="c1b7e5773085e1ebd6e35708896d4e01";
                 $text = $obj->Content;
                 $url = "http://api.tianapi.com/txapi/pinyin/index?key=".$key."&text=".$text;
-                $json = file_get_contents($url);
 
+                $json = file_get_contents($url);
                 $res = json_decode($json,true);
+
                 $content="";
                 if($res['code'] ==200){
-                    print_r($json);
+                    $today = $res['result']['txsjsygwljkpt'];
+                    $content .=$today['txsjsygwljkpt'];
                 }else{
-                    echo $res['msg'];
+                    echo "错误".$res['msg'];
                 }
-
+                echo $this->responseText($obj, $content);
 
 
 
@@ -132,75 +134,75 @@ class TestController extends Controller
 
             }
             //素材
-            if($obj->MsgType=="image"){
-                $res = Messa::where("media_id",$obj->MediaId)->first();
-                $access_token = $this->getAccessToken();
-                if(empty($res)){
-                    $url="https://api.weixin.qq.com/cgi-bin/media/get?access_token=".$access_token."&media_id=".$obj->MediaId;
-                    $url=file_get_contents($url);
-                    $data=[
-                        "time"=>time(),
-                        'msg_type'=>$obj->MsgType,
-                        'openid'=>$obj->FromUserName,
-                        "msg_id"=>$obj->MsgId
-                    ];
-                    //图片
-                    if($obj->MsgType=="image"){
-                        $file_type='.jpg';
-                        $data["url"] = $obj->PicUrl;
-                        $data["media_id"]=$obj->MediaId;
-                    }else
-                    //视频
-                    if($obj->MsgType=="video"){
-                        $file_type='.mp4';
-                        $data["media_id"]=$obj->MediaId;
-                    }else
-                    //文本
-                    if($obj->MsgType=="text"){
-                        $file_type='.txt';
-                        $data["content"]=$obj->Content;
-                    }else
-                    //音频
-                    if($obj->MsgType=="voice"){
-                        $file_type=".amr";
-                        $data["media_id"]=$obj->MediaId;
-                    }else
-                    if(!empty($file_type)){
-                        file_put_contents("dwaw".$file_type,$url);
-                    }
-                    Messa::insert($data);
-
-                }else{
-                    return $res;
-                }
-                return true;
-            }
-            //签到
-            if($obj->EventKey == "LI"){
-               $key = $obj->FromUsername;
-               $times = data("Y-m-d",time());
-               $date = Redis::zrange($key,0,-1);
-               if($date){
-                   $date = $date[0];
-               }
-
-               if($date == $times){
-                   $content="今日已经签到了";
-               }else{
-                   $zcard = Redis::zcard($key);
-                   if($zcard>=1){
-                       Redis::zremrangebyrank($key,0,0);
-                   }
-                   $keys = $this->receiveMsg($obj);
-                   $keys = $keys['FromUserName'];
-                   $zincrby = Redis::zincrby($key,1,$keys);
-                   $zdd  =Redis::zadd($key,$zincrby,$times);
-
-                   $score = Redis::incrby($keys . "_score",100);
-                   $content = "签到成功";
-               }
-
-           }
+//            if($obj->MsgType=="image"){
+//                $res = Messa::where("media_id",$obj->MediaId)->first();
+//                $access_token = $this->getAccessToken();
+//                if(empty($res)){
+//                    $url="https://api.weixin.qq.com/cgi-bin/media/get?access_token=".$access_token."&media_id=".$obj->MediaId;
+//                    $url=file_get_contents($url);
+//                    $data=[
+//                        "time"=>time(),
+//                        'msg_type'=>$obj->MsgType,
+//                        'openid'=>$obj->FromUserName,
+//                        "msg_id"=>$obj->MsgId
+//                    ];
+//                    //图片
+//                    if($obj->MsgType=="image"){
+//                        $file_type='.jpg';
+//                        $data["url"] = $obj->PicUrl;
+//                        $data["media_id"]=$obj->MediaId;
+//                    }else
+//                    //视频
+//                    if($obj->MsgType=="video"){
+//                        $file_type='.mp4';
+//                        $data["media_id"]=$obj->MediaId;
+//                    }else
+//                    //文本
+//                    if($obj->MsgType=="text"){
+//                        $file_type='.txt';
+//                        $data["content"]=$obj->Content;
+//                    }else
+//                    //音频
+//                    if($obj->MsgType=="voice"){
+//                        $file_type=".amr";
+//                        $data["media_id"]=$obj->MediaId;
+//                    }else
+//                    if(!empty($file_type)){
+//                        file_put_contents("dwaw".$file_type,$url);
+//                    }
+//                    Messa::insert($data);
+//
+//                }else{
+//                    return $res;
+//                }
+//                return true;
+//            }
+//            //签到
+//            if($obj->EventKey == "LI"){
+//               $key = $obj->FromUsername;
+//               $times = data("Y-m-d",time());
+//               $date = Redis::zrange($key,0,-1);
+//               if($date){
+//                   $date = $date[0];
+//               }
+//
+//               if($date == $times){
+//                   $content="今日已经签到了";
+//               }else{
+//                   $zcard = Redis::zcard($key);
+//                   if($zcard>=1){
+//                       Redis::zremrangebyrank($key,0,0);
+//                   }
+//                   $keys = $this->receiveMsg($obj);
+//                   $keys = $keys['FromUserName'];
+//                   $zincrby = Redis::zincrby($key,1,$keys);
+//                   $zdd  =Redis::zadd($key,$zincrby,$times);
+//
+//                   $score = Redis::incrby($keys . "_score",100);
+//                   $content = "签到成功";
+//               }
+//
+//           }
 
 
         }
