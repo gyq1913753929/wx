@@ -342,7 +342,7 @@ class TestController extends Controller
 
                 [
                     "type"=>"click",
-                    "name"=>"签到",
+                    "name"=>"历史记录",
                     "key"=>"V1001_TODAY_QQ",
                 ],
 
