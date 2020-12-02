@@ -43,3 +43,7 @@ Route::any('/detail',"TestController@detail");
 
 
 Route::any('/detailww',"TestController@detailww");
+Route::any('/addfav',"TestController@addfav");
+Route::any('/cartadd',"TestController@cartadd")->middleware('check.token');
+Route::any('/cartaa',"TestController@cartaa");
+

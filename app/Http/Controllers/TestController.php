@@ -8,6 +8,8 @@ use GuzzleHttp\Client;
 use App\Model\Fans;
 use App\Model\Messa;
 use App\Model\XcxLogin;
+use App\Model\GoodsModel;
+use App\Model\Cart;
 use DB;
 class TestController extends Controller
 {
@@ -70,37 +72,62 @@ class TestController extends Controller
                 }
                 echo $this->responseText($obj, $content);
             }
-            //天气
+            //翻议
             if($obj->MsgType == "text") {
-                $city = urlencode(str_replace("天气:", "", $obj->Content));
-                $key = "e2ca2bb61958e6478028e72b8a7a8b60";
-                $url = "http://apis.juhe.cn/simpleWeather/query?city=" . $city . "&key=" . $key;
-                $tianqi = file_get_contents($url);
-                //file_put_contents('tianqi.txt',$tianqi);
-                $res = json_decode($tianqi, true);
-                $content = "";
-                if ($res['error_code'] == 0) {
-                    $today = $res['result']['realtime'];
-                    $content .= "查询天气的城市:" . $res['result']['city'] . "\n";
-                    $content .= "天气详细情况" . $today['info'] . "\n";
-                    $content .= "温度" . $today['temperature'] . "\n";
-                    $content .= "湿度" . $today['humidity'] . "\n";
-                    $content .= "风向" . $today['direct'] . "\n";
-                    $content .= "风力" . $today['power'] . "\n";
-                    $content .= "空气质量指数" . $today['aqi'] . "\n";
-
-                    //获取一个星期的天气
-                    $future = $res['result']['future'];
-                    foreach ($future as $k => $v) {
-                        $content .= "日期:" . date("Y-m-d", strtotime($v['date'])) . $v['temperature'] . ",";
-                        $content .= "天气:" . $v['weather'] . "\n";
-                    }
-                } else {
-                    $content = "你查寻的天气失败，请输入正确的格式:天气、城市";
+                $key="c1b7e5773085e1ebd6e35708896d4e01";
+                $text = $obj->Content;
+                $url = "http://api.tianapi.com/txapi/pinyin/index?key=".$key."&text=".$text;
+                $json = file_get_contents($url);
+                $res = json_decode($json,true);
+                $content="";
+                if($json['code'] ==200){
+                    print_r($json);
+                }else{
+                    echo $json['msg'];
                 }
-                //file_put_contents("tianqi.txt",$content);
 
-                echo $this->responseText($obj, $content);
+
+
+
+
+
+
+
+
+
+
+
+
+
+//                $city = urlencode(str_replace("天气:", "", $obj->Content));
+//                $key = "e2ca2bb61958e6478028e72b8a7a8b60";
+//                $url = "http://apis.juhe.cn/simpleWeather/query?city=" . $city . "&key=" . $key;
+//                $tianqi = file_get_contents($url);
+//                //file_put_contents('tianqi.txt',$tianqi);
+//                $res = json_decode($tianqi, true);
+//                $content = "";
+//                if ($res['error_code'] == 0) {
+//                    $today = $res['result']['realtime'];
+//                    $content .= "查询天气的城市:" . $res['result']['city'] . "\n";
+//                    $content .= "天气详细情况" . $today['info'] . "\n";
+//                    $content .= "温度" . $today['temperature'] . "\n";
+//                    $content .= "湿度" . $today['humidity'] . "\n";
+//                    $content .= "风向" . $today['direct'] . "\n";
+//                    $content .= "风力" . $today['power'] . "\n";
+//                    $content .= "空气质量指数" . $today['aqi'] . "\n";
+//
+//                    //获取一个星期的天气
+//                    $future = $res['result']['future'];
+//                    foreach ($future as $k => $v) {
+//                        $content .= "日期:" . date("Y-m-d", strtotime($v['date'])) . $v['temperature'] . ",";
+//                        $content .= "天气:" . $v['weather'] . "\n";
+//                    }
+//                } else {
+//                    $content = "你查寻的天气失败，请输入正确的格式:天气、城市";
+//                }
+//                //file_put_contents("tianqi.txt",$content);
+//
+//                echo $this->responseText($obj, $content);
 
             }
             //素材
@@ -485,39 +512,65 @@ class TestController extends Controller
     {
         //接收code
         $code = request()->get('code');
+
         //使用code
-        $url='https://api.weixin.qq.com/sns/jscode2session?appid='.env('WX_XCX_APPID').'&secret='.env('WX_XCX_APPSEC').'&js_code='.$code.'&grant_type=authorization_code';
+        $url = 'https://api.weixin.qq.com/sns/jscode2session?appid=' . env('WX_XCX_APPID') . '&secret=' . env('WX_XCX_APPSEC') . '&js_code=' . $code . '&grant_type=authorization_code';
         //转json
-        $data = json_decode(file_get_contents($url),true);
+        $data = json_decode(file_get_contents($url), true);
+
         //自定议状态
-        if(isset($data['errcode'])){
-            $response=[
-                'errno'=> 50001,
-                'msg' => '登陆成功',
-        ];
-        }else{
+        if (isset($data['errcode'])) {
+            $response = [
+                'errno' => 50001,
+                'msg' => '登陆失败',
+            ];
+        } else {
             //openid入库
-            if(empty(XcxLogin::where('openid',$data['openid'])->first())){
-                $openid=["openid"=>$data["openid"]];
-                XcxLogin::insert($openid);
+            $openid = $data['openid'];
+            $u = XcxLogin::where(['openid' => $openid])->first();
+
+            if ($u) {
+                $uid = $u->id;
+            } else {
+                $u_info = [
+                    'openid' => $openid,
+                    'add_time' => time(),
+                    'type' => 3
+                ];
+                $u_id = XcxLogin::insertGetId($u_info);
+
             }
+
             $token=sha1($data['openid'].$data['session_key'].mt_rand(0,99999));
             //保存token
             $redis_key = 'xcx_token:'.$token;
-            Redis::set($redis_key,time());
-            //过期时间
+
+
+            $login_info=[
+                'uid'=>$uid,
+                'user_name'=>"",
+                'login_time'=>date('Y-m-d H:i:s'),
+                'login_ip'=>$request->getClientIp(),
+                'token'=>$token,
+                'openid'=>$openid
+            ];
+
+
+            Redis::hMset($redis_key,$login_info);
+
             Redis::expire($redis_key,7200);
 
             $response = [
                 'errno' =>0,
                 'msg' =>'ok',
-                'data'=>[
+                'data' =>[
                     'token'=>$token
                 ]
             ];
         }
-        return $response;
-    }
+            return $response;
+        }
+
 
     public function detail()
     {
@@ -561,6 +614,72 @@ class TestController extends Controller
         return $response;
     }
 
+    //收藏
+    public function addfav(Request $request)
+    {
+        $goods_id = request()->get('goods_id');     //接收id
+        //加入收藏 redis有序集合
+        $uid = 2345;
+        $redis_key = 'ss:goods:fav:'.$uid;          //用户收藏的商品有序集合
+        Redis::zadd($redis_key,time(),$goods_id);        //将商品ID加入有序集合 排序
+
+        $response=[
+            'errno'=>0,
+            'msg'=>'ok'
+        ];
+        return $response;
+
+    }
+
+    //加入购物车
+    public function cartadd(Request $request)
+    {
+        $goods_id = request()->post('goods_id');     //接收id
+        $uid = $_SERVER['uid'];
+       //查询表商品的价格
+        $price = GoodsModel::find($goods_id)->shop_price;
+
+        //将商品存库或redis
+        $info = [
+            'goods_id'=>$goods_id,
+            'uid'=>$uid,
+            'goods_num'=>1,
+            'add_time'=>time(),
+            'cart_price'=>$price,
+        ];
+
+        $id = Cart::insert($info);
+        if($id){
+            $response=[
+                'errno'=>0,
+                'msg'=>'ok'
+            ];
+        }else{
+            $response = [
+                'errno'=>50000,
+                'msg' =>'加入失败'
+            ];
+        }
+        return $response;
+    }
+
+    //购物车列表
+    public function cartaa()
+    {
+        $goods_id=request()->get('goods_id');
+
+        $res = DB::table('ecs_goods')->select('goods_id','shop_price','goods_name','goods_img','goods_number','goods_thumb')->where('goods_id',$goods_id)->first();
+
+        $response=[
+            'errno'=>0,
+            'msg'=>'ok',
+            'data'=>[
+                'list'=>$res
+            ]
+        ];
+
+        return $response;
+    }
 
 
 

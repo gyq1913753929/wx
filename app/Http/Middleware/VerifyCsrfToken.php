@@ -23,6 +23,7 @@ class VerifyCsrfToken extends Middleware
         'wx',
         'test4',
         'cd',
-        'token'
+        'token',
+        'cartadd'
     ];
 }
